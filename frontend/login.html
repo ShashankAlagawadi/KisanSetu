@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n-title="loginTitle">Login - KisanSetu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary-green: #22c55e;
             --dark-green: #166534;
@@ -233,7 +239,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive */
@@ -244,6 +252,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <!-- Logo -->
@@ -255,7 +264,8 @@
         </div>
 
         <!-- Back Button -->
-        <button class="btn-back" onclick="goBack()" style="position: absolute; top: 20px; left: 20px; padding: 8px 16px; background: #f3f4f6; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+        <button class="btn-back" onclick="goBack()"
+            style="position: absolute; top: 20px; left: 20px; padding: 8px 16px; background: #f3f4f6; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px;">
             <i class="fas fa-arrow-left"></i> <span data-i18n="back">Back</span>
         </button>
 
@@ -280,7 +290,8 @@
                 <label for="email" data-i18n="emailLabel">Email Address</label>
                 <div class="input-icon">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" data-i18n-placeholder="emailPlaceholder" required>
+                    <input type="email" id="email" name="email" placeholder="Enter your email"
+                        data-i18n-placeholder="emailPlaceholder" required>
                 </div>
             </div>
 
@@ -288,7 +299,8 @@
                 <label for="password" data-i18n="passwordLabel">Password</label>
                 <div class="input-icon">
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" data-i18n-placeholder="passwordPlaceholder" required>
+                    <input type="password" id="password" name="password" placeholder="Enter your password"
+                        data-i18n-placeholder="passwordPlaceholder" required>
                 </div>
             </div>
 
@@ -299,7 +311,8 @@
         </form>
 
         <div class="links">
-            <p><span data-i18n="noAccount">Don't have an account?</span> <a href="register.html" data-i18n="registerHere">Register here</a></p>
+            <p><span data-i18n="noAccount">Don't have an account?</span> <a href="register.html"
+                    data-i18n="registerHere">Register here</a></p>
         </div>
     </div>
 
@@ -307,8 +320,8 @@
 
     <script>
         // API Configuration
-        const API_BASE_URL = 'https://kisansetu-backend.onrender.com';
-        
+        const API_BASE_URL = 'https://kisansetu-backend-na6o.onrender.com';
+
         // State
         let selectedRole = 'FARMER';
 
@@ -355,7 +368,7 @@
         // Login Form Handler
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
@@ -415,4 +428,5 @@
         }
     </script>
 </body>
+
 </html>
