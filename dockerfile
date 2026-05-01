@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk
 
 WORKDIR /app
 
@@ -7,4 +7,4 @@ COPY . .
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
-CMD ["java", "-jar", "target\\kisansetu-backend-1.0.0.jar"]
+CMD ["java", "-jar", "/target/kisansetu-backend-1.0.0.jar"]
