@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - KisanSetu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-green: #22c55e;
+            --dark-green: #166534;
+            --light-green: #dcfce7;
+            --accent-orange: #f97316;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #fff 50%, #fef3e2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1); z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px; margin: 0 auto; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 1.5rem; font-weight: 700; color: var(--dark-green); text-decoration: none;
+        }
+        .logo i { color: var(--primary-green); font-size: 1.8rem; }
+
+        .nav-actions {
+            display: flex; align-items: center; gap: 15px;
+        }
+
+        .btn-back {
+            padding: 8px 16px; background: #f3f4f6; color: #374151;
+            border: none; border-radius: 20px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-back:hover { background: #e5e7eb; }
+
+        .user-info {
+            display: flex; align-items: center; gap: 10px;
+            color: #374151; font-weight: 500;
+        }
+
+        .user-info i {
+            width: 40px; height: 40px; background: var(--light-green);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--primary-green);
+        }
+
+        .btn-logout {
+            padding: 8px 20px; background: #fee2e2; color: #dc2626;
+            border: none; border-radius: 20px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover { background: #fecaca; }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px; padding: 30px 20px; max-width: 1400px; margin-left: auto; margin-right: auto;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .stat-card {
+            background: white; padding: 25px; border-radius: 16px; box-shadow: var(--shadow);
+            text-align: center; transition: all 0.3s;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;
+        }
+
+        .stat-icon.green { background: var(--light-green); color: var(--primary-green); }
+        .stat-icon.orange { background: #ffedd5; color: var(--accent-orange); }
+        .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--dark-green); }
+        .stat-label { color: #6b7280; font-size: 14px; margin-top: 5px; }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid; grid-template-columns: 2fr 1fr; gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Cards */
+        .card {
+            background: white; border-radius: 20px; box-shadow: var(--shadow);
+            padding: 30px; margin-bottom: 30px;
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f3f4f6;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3rem; font-weight: 700; color: var(--dark-green);
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .card-title i { color: var(--primary-green); }
+
+        .btn-view-all {
+            padding: 8px 16px; background: var(--light-green); color: var(--dark-green);
+            border: none; border-radius: 20px; font-size: 13px; font-weight: 600;
+            cursor: pointer; text-decoration: none; transition: all 0.3s;
+        }
+
+        .btn-view-all:hover { background: var(--primary-green); color: white; }
+
+        /* Search & Filter */
+        .search-filter-container {
+            background: #f9fafb; padding: 20px; border-radius: 16px; margin-bottom: 25px;
+        }
+
+        .search-bar {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1; padding: 12px 20px; border: 2px solid #e5e7eb;
+            border-radius: 12px; font-size: 15px; font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none; border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .btn-search {
+            padding: 12px 24px; background: var(--primary-green); color: white;
+            border: none; border-radius: 12px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-search:hover { background: var(--dark-green); }
+
+        .filter-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row { grid-template-columns: 1fr; }
+        }
+
+        .filter-group {
+            display: flex; flex-direction: column; gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 12px; color: #6b7280; font-weight: 500;
+        }
+
+        .filter-select {
+            padding: 10px 14px; border: 2px solid #e5e7eb;
+            border-radius: 10px; font-size: 14px; font-family: 'Poppins', sans-serif;
+            background: white; cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none; border-color: var(--primary-green);
+        }
+
+        /* Crops Grid */
+        .crops-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+        }
+
+        .crop-card {
+            background: #f9fafb; border-radius: 20px; overflow: hidden;
+            transition: all 0.3s; border: 2px solid transparent;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px); background: white;
+            border-color: var(--primary-green); box-shadow: var(--shadow);
+        }
+
+        .crop-image-container {
+            height: 180px; overflow: hidden; position: relative;
+        }
+
+        .crop-image {
+            width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;
+        }
+
+        .crop-card:hover .crop-image { transform: scale(1.05); }
+
+        .crop-badge {
+            position: absolute; top: 15px; left: 15px;
+            background: var(--primary-green); color: white;
+            padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+
+        .crop-content { padding: 20px; }
+
+        .crop-header {
+            display: flex; justify-content: space-between; align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .crop-name {
+            font-size: 1.2rem; font-weight: 700; color: var(--dark-green);
+        }
+
+        .crop-price {
+            font-size: 1.3rem; font-weight: 700; color: var(--primary-green);
+        }
+
+        .crop-details {
+            color: #6b7280; font-size: 14px; margin-bottom: 15px;
+        }
+
+        .crop-details p { margin-bottom: 5px; }
+
+        /* Farmer Rating */
+        .farmer-rating {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 15px;
+        }
+
+        .farmer-rating i { color: #fbbf24; }
+
+        .farmer-rating span {
+            background: var(--light-green); color: var(--dark-green);
+            padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+
+        .btn-order {
+            width: 100%; padding: 12px;
+            background: var(--accent-orange); color: white; border: none;
+            border-radius: 10px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-order:hover { background: #ea580c; transform: translateY(-2px); }
+
+        /* Order Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+            z-index: 2000; backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white; border-radius: 24px; width: 90%; max-width: 450px;
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+
+        .modal-header {
+            padding: 25px 30px; border-bottom: 2px solid #f3f4f6;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .modal-title { font-size: 1.3rem; font-weight: 700; color: var(--dark-green); }
+
+        .btn-close {
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background: #f3f4f6; cursor: pointer; font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .btn-close:hover { background: #e5e7eb; }
+
+        .modal-body { padding: 30px; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block; margin-bottom: 8px; color: #374151;
+            font-weight: 500; font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%; padding: 14px 18px; border: 2px solid #e5e7eb;
+            border-radius: 12px; font-size: 15px; font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none; border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .total-amount {
+            background: var(--light-green); padding: 20px; border-radius: 12px;
+            text-align: center; margin-bottom: 20px;
+        }
+
+        .total-amount-label { color: #6b7280; font-size: 14px; margin-bottom: 5px; }
+
+        .total-amount-value { font-size: 2rem; font-weight: 700; color: var(--primary-green); }
+
+        .btn-confirm {
+            width: 100%; padding: 15px;
+            background: var(--primary-green); color: white; border: none;
+            border-radius: 12px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
+        }
+
+        .btn-confirm:hover { background: var(--dark-green); }
+
+        .btn-confirm:disabled {
+            background: #9ca3af; cursor: not-allowed;
+        }
+
+        /* ==========================================
+           BUYER ORDERS - ORDER CONTROL FLOW
+           ========================================== */
+        
+        .orders-list { display: grid; gap: 15px; }
+
+        .order-item {
+            display: grid; grid-template-columns: 60px 1fr auto; gap: 15px;
+            align-items: center; padding: 20px; background: #f9fafb;
+            border-radius: 16px; transition: all 0.3s; border: 2px solid transparent;
+            border-left: 4px solid transparent;
+        }
+
+        .order-item:hover { background: white; border-color: var(--primary-green); }
+
+        /* Status-based left border colors */
+        .order-item.pending { border-left-color: #f59e0b; }
+        .order-item.confirmed { border-left-color: var(--primary-green); }
+        .order-item.rejected { border-left-color: #dc2626; }
+        .order-item.cancelled { border-left-color: #6b7280; }
+        .order-item.out_of_stock { border-left-color: #f97316; }
+        .order-item.shipped { border-left-color: #2563eb; }
+        .order-item.delivered { border-left-color: #7c3aed; }
+        .order-item.completed { border-left-color: #059669; }
+
+        .order-icon {
+            width: 60px; height: 60px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+
+        .order-icon.pending { background: #fef3c7; color: #d97706; }
+        .order-icon.confirmed { background: var(--light-green); color: var(--primary-green); }
+        .order-icon.rejected { background: #fee2e2; color: #dc2626; }
+        .order-icon.cancelled { background: #e5e7eb; color: #6b7280; }
+        .order-icon.out_of_stock { background: #ffedd5; color: #c2410c; }
+        .order-icon.shipped { background: #dbeafe; color: #2563eb; }
+        .order-icon.delivered { background: #e9d5ff; color: #7c3aed; }
+        .order-icon.completed { background: var(--light-green); color: var(--dark-green); }
+
+        .order-info h4 {
+            color: var(--dark-green); font-weight: 600; margin-bottom: 5px;
+        }
+
+        .order-info p {
+            color: #6b7280; font-size: 13px; margin-bottom: 3px;
+        }
+
+        /* Order Status Badges */
+        .order-status {
+            padding: 6px 12px; border-radius: 20px; font-size: 11px;
+            font-weight: 600; text-transform: uppercase; display: inline-block;
+            margin-top: 5px;
+        }
+
+        .order-status.pending { background: #fef3c7; color: #92400e; }
+        .order-status.confirmed { background: var(--light-green); color: var(--dark-green); }
+        .order-status.rejected { background: #fee2e2; color: #991b1b; }
+        .order-status.cancelled { background: #e5e7eb; color: #374151; }
+        .order-status.out_of_stock { background: #ffedd5; color: #9a3412; }
+        .order-status.shipped { background: #dbeafe; color: #1e40af; }
+        .order-status.delivered { background: #e9d5ff; color: #5b21b6; }
+        .order-status.completed { background: #d1fae5; color: #065f46; }
+
+        /* Status message for buyer */
+        .status-message {
+            font-size: 12px; margin-top: 8px; padding: 8px 12px;
+            border-radius: 8px; font-weight: 500;
+        }
+
+        .status-message.pending { background: #fef3c7; color: #92400e; }
+        .status-message.confirmed { background: var(--light-green); color: var(--dark-green); }
+        .status-message.rejected { background: #fee2e2; color: #991b1b; }
+        .status-message.cancelled { background: #e5e7eb; color: #374151; }
+        .status-message.out_of_stock { background: #ffedd5; color: #9a3412; }
+        .status-message.shipped { background: #dbeafe; color: #1e40af; }
+        .status-message.delivered { background: #e9d5ff; color: #5b21b6; }
+
+        /* Action Buttons */
+        .order-actions {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+        }
+
+        .btn-cancel {
+            padding: 8px 16px; background: #fee2e2; color: #dc2626;
+            border: none; border-radius: 8px; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+
+        .btn-cancel:hover { background: #fecaca; }
+
+        .btn-cancel:disabled {
+            background: #e5e7eb; color: #9ca3af; cursor: not-allowed;
+        }
+
+        .btn-confirm-delivery {
+            padding: 10px 20px; background: var(--primary-green); color: white;
+            border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; margin-top: 10px;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+
+        .btn-confirm-delivery:hover {
+            background: var(--dark-green); transform: translateY(-1px);
+        }
+
+        /* Buyer Rating Card */
+        .rating-card {
+            background: linear-gradient(135deg, #fef3e2 0%, #fff 100%);
+            border: 2px solid var(--accent-orange);
+        }
+
+        .rating-display {
+            text-align: center; padding: 20px 0;
+        }
+
+        .rating-stars {
+            font-size: 2.5rem; color: #fbbf24; margin-bottom: 10px;
+        }
+
+        .rating-value {
+            font-size: 3rem; font-weight: 700; color: var(--dark-green);
+        }
+
+        .rating-text {
+            color: #6b7280; font-size: 14px; margin-top: 5px;
+        }
+
+        .rating-stats {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;
+        }
+
+        .rating-stat {
+            text-align: center; padding: 15px; background: white;
+            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .rating-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary-green); }
+        .rating-stat-label { color: #6b7280; font-size: 12px; margin-top: 3px; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #6b7280;
+        }
+
+        .empty-state i { font-size: 4rem; color: #d1d5db; margin-bottom: 20px; }
+
+        .spinner {
+            display: none; width: 18px; height: 18px;
+            border: 3px solid #ffffff; border-top-color: transparent;
+            border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;
+        }
+
+        .btn-confirm.loading .spinner { display: inline-block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .nav-actions .user-info span { display: none; }
+            .crops-grid { grid-template-columns: 1fr; }
+            .order-item { grid-template-columns: 50px 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index-new.html" class="logo">
+                <i class="fas fa-leaf"></i>
+                <span>KisanSetu</span>
+            </a>
+            <div class="nav-actions">
+                <button class="btn-back" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="back">Back</span>
+                </button>
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Buyer</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-shopping-bag"></i></div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label" data-i18n="totalOrders">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                <div class="stat-value" id="pendingOrders">0</div>
+                <div class="stat-label" data-i18n="pendingApproval">Pending Approval</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-truck"></i></div>
+                <div class="stat-value" id="activeOrders">0</div>
+                <div class="stat-label" data-i18n="activeOrders">Active Orders</div>
+            </div>
+            <div class="stat-card rating-card" style="border: none;">
+                <div class="stat-icon purple"><i class="fas fa-star"></i></div>
+                <div class="stat-value" id="ratingValue">0.0</div>
+                <div class="stat-label" data-i18n="buyerRating">Buyer Rating</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Available Crops with Search & Filter -->
+            <div class="left-column">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-store"></i> <span data-i18n="availableCrops">Available Crops</span></h3>
+                        <span id="cropCount">Loading...</span>
+                    </div>
+
+                    <!-- Search & Filter Container -->
+                    <div class="search-filter-container">
+                        <div class="search-bar">
+                            <input type="text" class="search-input" id="searchInput" 
+                                   placeholder="Search crops by name..." data-i18n-placeholder="searchPlaceholder" onkeyup="applyFilters()">
+                            <button class="btn-search" onclick="applyFilters()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                        <div class="filter-row">
+                            <div class="filter-group">
+                                <label data-i18n="categoryLabel">Category</label>
+                                <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+                                    <option value="">All Categories</option>
+                                    <option value="vegetable">Vegetables</option>
+                                    <option value="fruit">Fruits</option>
+                                    <option value="grain">Grains</option>
+                                    <option value="pulse">Pulses</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label data-i18n="sortByPrice">Sort by Price</label>
+                                <select class="filter-select" id="priceSort" onchange="applyFilters()">
+                                    <option value="">Default</option>
+                                    <option value="low-high">Low to High</option>
+                                    <option value="high-low">High to Low</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label data-i18n="farmerRatingLabel">Farmer Rating</label>
+                                <select class="filter-select" id="ratingFilter" onchange="applyFilters()">
+                                    <option value="">All Ratings</option>
+                                    <option value="4">4+ Stars</option>
+                                    <option value="3">3+ Stars</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cropsGrid" class="crops-grid">
+                        <div class="empty-state">
+                            <i class="fas fa-seedling"></i>
+                            <p>Loading available crops...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: My Orders -->
+            <div class="right-column">
+                <!-- My Orders - Order Control Flow -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-clipboard-list"></i> <span data-i18n="myOrders">My Orders</span></h3>
+                        <a href="buyer-orders.html" class="btn-view-all" data-i18n="viewAll">View All</a>
+                    </div>
+                    <div id="ordersList" class="orders-list">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>No orders yet. Start shopping!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buyer Rating Card -->
+                <div class="card rating-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-trophy"></i> <span data-i18n="buyerRating">Buyer Rating</span></h3>
+                    </div>
+                    <div class="rating-display">
+                        <div class="rating-stars" id="ratingStars">⭐⭐⭐⭐⭐</div>
+                        <div class="rating-value" id="ratingScore">5.0</div>
+                        <div class="rating-text" data-i18n="basedOnPurchases">Based on completed purchases</div>
+                    </div>
+                    <div class="rating-stats">
+                        <div class="rating-stat">
+                            <div class="rating-stat-value" id="statTotalOrders">0</div>
+                            <div class="rating-stat-label" data-i18n="totalOrders">Total Orders</div>
+                        </div>
+                        <div class="rating-stat">
+                            <div class="rating-stat-value" id="statCompleted">0</div>
+                            <div class="rating-stat-label" data-i18n="completed">Completed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Order Modal -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="placeOrder">Place Order</h3>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label data-i18n="crop">Crop</label>
+                    <input type="text" id="modalCropName" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="availableQuantity">Available Quantity</label>
+                    <input type="text" id="modalAvailableQty" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderQuantity" data-i18n="orderQuantity">Order Quantity (kg)</label>
+                    <input type="number" id="orderQuantity" min="1" step="0.1" 
+                           placeholder="Enter quantity" data-i18n-placeholder="orderQtyPlaceholder" oninput="calculateTotal()">
+                </div>
+
+                <div class="total-amount">
+                    <div class="total-amount-label" data-i18n="totalAmount">Total Amount</div>
+                    <div class="total-amount-value" id="totalAmount">₹0.00</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deliveryAddress" data-i18n="deliveryAddress">Delivery Address</label>
+                    <input type="text" id="deliveryAddress" placeholder="Enter delivery address" data-i18n-placeholder="deliveryPlaceholder">
+                </div>
+
+                <button class="btn-confirm" id="confirmOrderBtn" onclick="confirmOrder()">
+                    <span class="spinner"></span>
+                    <span class="btn-text" data-i18n="placeOrder">Place Order</span>
+                </button>
+                
+                <p style="text-align: center; font-size: 12px; color: #6b7280; margin-top: 15px;">
+                    <i class="fas fa-info-circle"></i> Order will be placed with 🟡 PENDING status
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script>
+        // ==========================================
+        // CONFIGURATION & STATE
+        // ==========================================
+        
+        const API_BASE_URL = 'http://localhost:8081';
+        
+        // Get logged-in user from localStorage
+        const user = JSON.parse(localStorage.getItem('kisansetu_user') || '{}');
+        
+        // Check authentication
+        if (!user.id || user.role !== 'BUYER') {
+            window.location.href = 'login.html';
+        }
+
+        // Set user name
+        document.getElementById('userName').textContent = user.fullName || 'Buyer';
+
+        // State
+        let allCrops = [];
+        let filteredCrops = [];
+        let selectedCrop = null;
+        let buyerStats = {
+            totalOrders: 0,
+            completedOrders: 0
+        };
+
+        // ==========================================
+        // NAVIGATION (BACK BUTTON FIX)
+        // ==========================================
+        
+        function goBack() {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('kisansetu_user') || '{}');
+            if (!user.id) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Use browser history back
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Default to index if no history
+                window.location.href = 'index-new.html';
+            }
+        }
+
+        // Handle browser back button
+        window.onpopstate = function(event) {
+            const user = JSON.parse(localStorage.getItem('kisansetu_user') || '{}');
+            if (!user.id) {
+                window.location.href = 'login.html';
+            }
+        };
+
+        // ==========================================
+        // AI RATING SYSTEM
+        // ==========================================
+        
+        function calculateBuyerRating() {
+            const { totalOrders, completedOrders } = buyerStats;
+            if (totalOrders === 0) return 5.0;
+            const completionRate = completedOrders / totalOrders;
+            return Math.min(5.0, Math.max(1.0, 3.0 + (completionRate * 2.0)));
+        }
+
+        function updateRatingDisplay() {
+            const rating = calculateBuyerRating();
+            const fullStars = Math.floor(rating);
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '⭐';
+            
+            document.getElementById('ratingStars').textContent = stars || '⭐';
+            document.getElementById('ratingScore').textContent = rating.toFixed(1);
+            document.getElementById('ratingValue').textContent = rating.toFixed(1);
+            document.getElementById('statTotalOrders').textContent = buyerStats.totalOrders;
+            document.getElementById('statCompleted').textContent = buyerStats.completedOrders;
+        }
+
+        // ==========================================
+        // CROP BROWSING - WITH SEARCH & FILTER
+        // ==========================================
+        
+        async function loadCrops() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/crops`);
+                allCrops = await response.json();
+                
+                // Add mock farmer ratings for filtering
+                allCrops = allCrops.map(crop => ({
+                    ...crop,
+                    farmerRating: (Math.random() * 2 + 3).toFixed(1)
+                }));
+                
+                filteredCrops = [...allCrops];
+                renderCrops();
+            } catch (error) {
+                console.error('Error loading crops:', error);
+                document.getElementById('cropsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load crops. Please try again.</p>
+                    </div>`;
+            }
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('categoryFilter').value;
+            const priceSort = document.getElementById('priceSort').value;
+            const minRating = document.getElementById('ratingFilter').value;
+
+            filteredCrops = allCrops.filter(crop => {
+                const matchesSearch = !searchTerm || crop.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = !category || crop.category === category;
+                const matchesRating = !minRating || parseFloat(crop.farmerRating) >= parseFloat(minRating);
+                return matchesSearch && matchesCategory && matchesRating;
+            });
+
+            if (priceSort === 'low-high') {
+                filteredCrops.sort((a, b) => a.pricePerKg - b.pricePerKg);
+            } else if (priceSort === 'high-low') {
+                filteredCrops.sort((a, b) => b.pricePerKg - a.pricePerKg);
+            }
+
+            renderCrops();
+        }
+
+        function renderCrops() {
+            const grid = document.getElementById('cropsGrid');
+            document.getElementById('cropCount').textContent = `${filteredCrops.length} ${_t('cropsFound')}`;
+            
+            if (filteredCrops.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>${_t('noMatchCrops')}</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = filteredCrops.map(crop => {
+                const fullStars = Math.floor(parseFloat(crop.farmerRating));
+                let stars = '';
+                for (let i = 0; i < fullStars; i++) stars += '⭐';
+
+                return `
+                    <div class="crop-card">
+                        <div class="crop-image-container">
+                            <img src="${crop.imageUrl || 'https://placehold.co/300x180/22c55e/ffffff?text=' + encodeURIComponent(crop.name || 'Crop')}" 
+                                 alt="${crop.name}" class="crop-image" 
+                                 onerror="this.src='https://placehold.co/300x180/22c55e/ffffff?text=🌾'">
+                            <span class="crop-badge">${crop.category || 'Crop'}</span>
+                        </div>
+                        <div class="crop-content">
+                            <div class="crop-header">
+                                <h4 class="crop-name">${crop.name}</h4>
+                                <div class="crop-price">₹${crop.pricePerKg}/kg</div>
+                            </div>
+                            <div class="crop-details">
+                                <p><i class="fas fa-weight-hanging"></i> ${crop.quantity} ${_t('kgAvailable')}</p>
+                                <p><i class="fas fa-map-marker-alt"></i> ${crop.location || _t('notSpecified')}</p>
+                                <p><i class="fas fa-user"></i> ${crop.farmerName || _t('unknown')}</p>
+                            </div>
+                            <div class="farmer-rating">
+                                ${stars}
+                                <span>${_t('rating')}: ${crop.farmerRating}</span>
+                            </div>
+                            <button class="btn-order" onclick="openOrderModal('${crop.id}')">
+                                <i class="fas fa-cart-plus"></i> ${_t('orderNow')}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // ORDER PLACEMENT
+        // ==========================================
+        
+        function openOrderModal(cropId) {
+            selectedCrop = allCrops.find(c => c.id === cropId);
+            if (!selectedCrop) return;
+
+            document.getElementById('modalCropName').value = selectedCrop.name;
+            document.getElementById('modalAvailableQty').value = `${selectedCrop.quantity} kg`;
+            document.getElementById('orderQuantity').max = selectedCrop.quantity;
+            document.getElementById('orderQuantity').value = '';
+            document.getElementById('totalAmount').textContent = '₹0.00';
+            document.getElementById('deliveryAddress').value = user.address || '';
+            
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').classList.remove('active');
+            selectedCrop = null;
+        }
+
+        function calculateTotal() {
+            if (!selectedCrop) return;
+            
+            const qty = parseFloat(document.getElementById('orderQuantity').value) || 0;
+            const total = qty * selectedCrop.pricePerKg;
+            document.getElementById('totalAmount').textContent = `₹${total.toFixed(2)}`;
+        }
+
+        async function confirmOrder() {
+            if (!selectedCrop) return;
+
+            const quantity = parseFloat(document.getElementById('orderQuantity').value);
+            const deliveryAddress = document.getElementById('deliveryAddress').value.trim();
+
+            if (!quantity || quantity <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            if (quantity > selectedCrop.quantity) {
+                alert(`Only ${selectedCrop.quantity} kg available`);
+                return;
+            }
+
+            if (!deliveryAddress) {
+                alert('Please enter delivery address');
+                return;
+            }
+
+            const btn = document.getElementById('confirmOrderBtn');
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btn.querySelector('.btn-text').textContent = _t('placingOrder');
+
+            const orderData = {
+                cropId: selectedCrop.id,
+                quantity: quantity,
+                buyerId: user.id,
+                buyerName: user.fullName,
+                buyerOrganization: user.organization || user.address || '',
+                deliveryAddress: deliveryAddress
+            };
+
+            console.log('Placing order:', orderData);
+            console.log('Selected crop:', selectedCrop);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Order placed successfully!\n\n🟡 Status: PENDING\n\nWaiting for farmer approval.');
+                    closeModal();
+                    loadOrders();
+                    loadCrops();
+                } else {
+                    alert(data.message || data.error || 'Failed to place order');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.querySelector('.btn-text').textContent = 'Place Order';
+            }
+        }
+
+        // ==========================================
+        // ORDER CONTROL FLOW - STATUS SYNC
+        // ==========================================
+        
+        async function loadOrders() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/buyer/${user.id}`);
+                const orders = await response.json();
+
+                const listContainer = document.getElementById('ordersList');
+                
+                // Update stats
+                buyerStats.totalOrders = orders.length;
+                buyerStats.completedOrders = orders.filter(o => o.status && o.status.toUpperCase() === 'COMPLETED').length;
+                
+                document.getElementById('totalOrders').textContent = buyerStats.totalOrders;
+                document.getElementById('pendingOrders').textContent = orders.filter(o => o.status && o.status.toUpperCase() === 'PENDING').length;
+                document.getElementById('activeOrders').textContent = orders.filter(o => 
+                    o.status && ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(o.status.toUpperCase())
+                ).length;
+
+                updateRatingDisplay();
+
+                // Show only recent 3 orders on dashboard
+                const recentOrders = orders.slice(0, 3);
+
+                if (recentOrders.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>${_t('noOrdersYet')}</p>
+                        </div>`;
+                    return;
+                }
+
+                // Sort by date (newest first)
+                recentOrders.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+
+                listContainer.innerHTML = recentOrders.map(order => renderOrderItem(order)).join('');
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        function renderOrderItem(order) {
+            const statusConfig = {
+                'PENDING': { 
+                    icon: 'fa-clock', class: 'pending', label: _t('statusPending'),
+                    message: _t('msgPending')
+                },
+                'CONFIRMED': { 
+                    icon: 'fa-check', class: 'confirmed', label: _t('statusConfirmed'),
+                    message: _t('msgConfirmed')
+                },
+                'REJECTED': { 
+                    icon: 'fa-times', class: 'rejected', label: _t('statusRejected'),
+                    message: _t('msgRejected')
+                },
+                'CANCELLED': { 
+                    icon: 'fa-ban', class: 'cancelled', label: _t('statusCancelled'),
+                    message: _t('msgCancelled')
+                },
+                'OUT_OF_STOCK': { 
+                    icon: 'fa-exclamation-triangle', class: 'out_of_stock', label: _t('statusOutOfStock'),
+                    message: _t('msgOutOfStock')
+                },
+                'SHIPPED': { 
+                    icon: 'fa-truck', class: 'shipped', label: _t('statusShipped'),
+                    message: _t('msgShipped')
+                },
+                'DELIVERED': { 
+                    icon: 'fa-box', class: 'delivered', label: _t('statusDelivered'),
+                    message: _t('msgDelivered')
+                },
+                'COMPLETED': { 
+                    icon: 'fa-check-circle', class: 'completed', label: _t('statusCompleted'),
+                    message: _t('msgCompleted')
+                }
+            };
+
+            const config = statusConfig[order.status] || statusConfig['PENDING'];
+
+            // Cancel button only for PENDING orders
+            const cancelButton = order.status && order.status.toUpperCase() === 'PENDING' 
+                ? `<button class="btn-cancel" onclick="cancelOrder('${order.id}')">
+                     <i class="fas fa-times"></i> ${_t('cancelOrder')}
+                   </button>` 
+                : '';
+
+            const confirmButton = order.status && order.status.toUpperCase() === 'DELIVERED' 
+                ? `<button class="btn-confirm-delivery" onclick="confirmDelivery('${order.id}')">
+                     <i class="fas fa-check"></i> ${_t('confirmDelivery')}
+                   </button>` 
+                : '';
+
+            return `
+                <div class="order-item ${order.status.toLowerCase().replace(/\s+/g, '_')}">
+                    <div class="order-icon ${config.class}">
+                        <i class="fas ${config.icon}"></i>
+                    </div>
+                    <div class="order-info">
+                        <h4>${order.cropName}</h4>
+                        <p><i class="fas fa-weight-hanging"></i> ${order.quantity} kg | 
+                           <i class="fas fa-rupee-sign"></i> ${order.totalAmount}</p>
+                        <p><i class="fas fa-calendar"></i> ${new Date(order.placedAt).toLocaleDateString()}</p>
+                        
+                        <div class="status-message ${order.status.toLowerCase().replace(/\s+/g, '_')}">
+                            ${config.message}
+                        </div>
+                        
+                        <div class="order-actions">
+                            ${cancelButton}
+                            ${confirmButton}
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="order-status ${order.status.toLowerCase().replace(/\s+/g, '_')}">${config.label}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Cancel Order (Buyer can only cancel if status = PENDING)
+        async function cancelOrder(orderId) {
+            if (!confirm('⛔ Cancel this order?\n\nThis action cannot be undone.')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=CANCELLED`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('⛔ Order cancelled successfully.\n\nThe crop quantity has been returned to farmer.');
+                    loadOrders();
+                    loadCrops();
+                } else {
+                    alert(data.error || 'Failed to cancel order. Order may no longer be pending.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Confirm Delivery (Buyer completes the order)
+        async function confirmDelivery(orderId) {
+            if (!confirm('✅ Confirm delivery received?\n\nThis will complete the order and release payment to the farmer.')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Order completed!\n\nPayment released to farmer. Thank you!');
+                    loadOrders();
+                } else {
+                    alert(data.error || 'Failed to confirm delivery');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // ==========================================
+        // UTILITIES
+        // ==========================================
+        
+        function logout() {
+            localStorage.removeItem('kisansetu_user');
+            localStorage.removeItem('kisansetu_token');
+            window.location.href = 'login.html';
+        }
+
+        // Close modal on overlay click
+        document.getElementById('orderModal').addEventListener('click', (e) => {
+            if (e.target.id === 'orderModal') closeModal();
+        });
+
+        // Initialize
+        loadCrops();
+        loadOrders();
+    </script>
+</body>
+</html>

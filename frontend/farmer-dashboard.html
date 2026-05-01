@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - KisanSetu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-green: #22c55e;
+            --dark-green: #166534;
+            --light-green: #dcfce7;
+            --accent-orange: #f97316;
+            --earth-brown: #92400e;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #fff 50%, #fef3e2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1); z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px; margin: 0 auto; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 1.5rem; font-weight: 700; color: var(--dark-green); text-decoration: none;
+        }
+        .logo i { color: var(--primary-green); font-size: 1.8rem; }
+
+        .nav-actions {
+            display: flex; align-items: center; gap: 15px;
+        }
+
+        .btn-back {
+            padding: 8px 16px; background: #f3f4f6; color: #374151;
+            border: none; border-radius: 20px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-back:hover { background: #e5e7eb; }
+
+        .user-info {
+            display: flex; align-items: center; gap: 10px;
+            color: #374151; font-weight: 500;
+        }
+
+        .user-info i {
+            width: 40px; height: 40px; background: var(--light-green);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--primary-green);
+        }
+
+        .btn-logout {
+            padding: 8px 20px; background: #fee2e2; color: #dc2626;
+            border: none; border-radius: 20px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover { background: #fecaca; }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px; padding: 30px 20px; max-width: 1400px; margin-left: auto; margin-right: auto;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .stat-card {
+            background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow);
+            text-align: center; transition: all 0.3s;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-icon {
+            width: 45px; height: 45px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.3rem;
+        }
+
+        .stat-icon.green { background: var(--light-green); color: var(--primary-green); }
+        .stat-icon.orange { background: #ffedd5; color: var(--accent-orange); }
+        .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+        .stat-icon.red { background: #fee2e2; color: #dc2626; }
+
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--dark-green); }
+        .stat-label { color: #6b7280; font-size: 13px; margin-top: 5px; }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid; grid-template-columns: 1fr 2fr; gap: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Cards */
+        .card {
+            background: white; border-radius: 20px; box-shadow: var(--shadow);
+            padding: 30px; margin-bottom: 30px;
+        }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f3f4f6;
+            flex-wrap: wrap; gap: 10px;
+        }
+
+        .card-title {
+            font-size: 1.3rem; font-weight: 700; color: var(--dark-green);
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .card-title i { color: var(--primary-green); }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block; margin-bottom: 8px; color: #374151;
+            font-weight: 500; font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%; padding: 14px 18px; border: 2px solid #e5e7eb;
+            border-radius: 12px; font-size: 15px; font-family: 'Poppins', sans-serif;
+            transition: all 0.3s; background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        /* AI Price Suggestion */
+        .ai-suggestion {
+            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+            border: 2px dashed var(--primary-green);
+            border-radius: 12px; padding: 20px; margin-bottom: 20px;
+        }
+
+        .ai-suggestion-header {
+            display: flex; align-items: center; gap: 10px;
+            color: var(--dark-green); font-weight: 600; margin-bottom: 15px;
+        }
+
+        .ai-suggestion-header i { color: var(--accent-orange); }
+
+        .suggested-price {
+            font-size: 2rem; font-weight: 700; color: var(--primary-green);
+        }
+
+        .price-range {
+            color: #6b7280; font-size: 14px; margin-top: 5px;
+        }
+
+        .btn-calculate {
+            width: 100%; padding: 12px;
+            background: var(--accent-orange); color: white; border: none;
+            border-radius: 10px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; margin-top: 10px;
+        }
+
+        .btn-calculate:hover { background: #ea580c; }
+
+        .btn-submit {
+            width: 100%; padding: 15px;
+            background: var(--primary-green); color: white; border: none;
+            border-radius: 12px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: var(--dark-green); transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-submit:disabled {
+            background: #9ca3af; cursor: not-allowed; transform: none; box-shadow: none;
+        }
+
+        /* Crops List */
+        .crops-list {
+            display: grid; gap: 15px;
+        }
+
+        .crop-item {
+            display: grid; grid-template-columns: 80px 1fr auto; gap: 15px;
+            align-items: center; padding: 20px; background: #f9fafb;
+            border-radius: 16px; transition: all 0.3s; border: 2px solid transparent;
+        }
+
+        .crop-item:hover { background: white; border-color: var(--primary-green); }
+
+        .crop-image {
+            width: 80px; height: 80px; border-radius: 12px;
+            object-fit: cover; background: #e5e7eb;
+        }
+
+        .crop-info h4 {
+            color: var(--dark-green); font-weight: 600; margin-bottom: 5px;
+        }
+
+        .crop-info p {
+            color: #6b7280; font-size: 14px; margin-bottom: 3px;
+        }
+
+        .crop-price {
+            font-size: 1.3rem; font-weight: 700; color: var(--primary-green);
+        }
+
+        .crop-actions {
+            display: flex; gap: 10px;
+        }
+
+        .btn-icon {
+            width: 40px; height: 40px; border-radius: 10px; border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-icon.delete { background: #fee2e2; color: #dc2626; }
+        .btn-icon:hover { transform: scale(1.1); }
+
+        /* ==========================================
+           ORDER CONTROL FLOW - INCOMING ORDERS
+           ========================================== */
+        
+        .orders-list {
+            display: grid; gap: 15px;
+        }
+
+        .order-item {
+            display: grid; grid-template-columns: 60px 1fr auto; gap: 15px;
+            align-items: center; padding: 20px; background: #f9fafb;
+            border-radius: 16px; transition: all 0.3s; border: 2px solid transparent;
+            border-left: 4px solid transparent;
+        }
+
+        .order-item:hover { background: white; border-color: var(--primary-green); }
+
+        /* Status-based left border colors */
+        .order-item.pending { border-left-color: #f59e0b; }
+        .order-item.confirmed { border-left-color: var(--primary-green); }
+        .order-item.rejected { border-left-color: #dc2626; }
+        .order-item.cancelled { border-left-color: #6b7280; }
+        .order-item.out_of_stock { border-left-color: #f97316; }
+
+        .order-icon {
+            width: 60px; height: 60px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+
+        .order-icon.pending { background: #fef3c7; color: #d97706; }
+        .order-icon.confirmed { background: var(--light-green); color: var(--primary-green); }
+        .order-icon.rejected { background: #fee2e2; color: #dc2626; }
+        .order-icon.cancelled { background: #e5e7eb; color: #6b7280; }
+        .order-icon.out_of_stock { background: #ffedd5; color: #c2410c; }
+        .order-icon.shipped { background: #dbeafe; color: #2563eb; }
+        .order-icon.delivered { background: #e9d5ff; color: #7c3aed; }
+        .order-icon.completed { background: var(--light-green); color: var(--dark-green); }
+
+        .order-info h4 {
+            color: var(--dark-green); font-weight: 600; margin-bottom: 5px;
+        }
+
+        .order-info p {
+            color: #6b7280; font-size: 13px; margin-bottom: 3px;
+        }
+
+        .order-info .buyer-org {
+            color: var(--accent-orange); font-weight: 500;
+        }
+
+        .order-price {
+            font-size: 1.2rem; font-weight: 700; color: var(--primary-green);
+            text-align: right;
+        }
+
+        /* Order Status Badges */
+        .order-status {
+            padding: 6px 12px; border-radius: 20px; font-size: 11px;
+            font-weight: 600; text-transform: uppercase; display: inline-block;
+            margin-top: 5px;
+        }
+
+        .order-status.pending { background: #fef3c7; color: #92400e; }
+        .order-status.confirmed { background: var(--light-green); color: var(--dark-green); }
+        .order-status.rejected { background: #fee2e2; color: #991b1b; }
+        .order-status.cancelled { background: #e5e7eb; color: #374151; }
+        .order-status.out_of_stock { background: #ffedd5; color: #9a3412; }
+        .order-status.shipped { background: #dbeafe; color: #1e40af; }
+        .order-status.delivered { background: #e9d5ff; color: #5b21b6; }
+        .order-status.completed { background: #d1fae5; color: #065f46; }
+
+        /* Payment Badge */
+        .payment-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 20px; font-size: 11px;
+            font-weight: 600; margin-top: 5px;
+        }
+
+        .payment-badge.escrow { background: #fef3c7; color: #92400e; }
+        .payment-badge.success { background: #d1fae5; color: #065f46; }
+        .payment-badge.refunded { background: #fee2e2; color: #991b1b; }
+
+        /* Order Action Buttons */
+        .order-actions {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+        }
+
+        .btn-action {
+            padding: 10px 20px; border-radius: 8px; font-size: 13px;
+            font-weight: 600; cursor: pointer; border: none; transition: all 0.3s;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .btn-accept {
+            background: var(--primary-green); color: white;
+        }
+        .btn-accept:hover { background: var(--dark-green); transform: translateY(-1px); }
+
+        .btn-decline {
+            background: #fee2e2; color: #dc2626;
+        }
+        .btn-decline:hover { background: #fecaca; transform: translateY(-1px); }
+
+        .btn-ship {
+            background: #dbeafe; color: #1e40af;
+        }
+        .btn-ship:hover { background: #bfdbfe; transform: translateY(-1px); }
+
+        .btn-deliver {
+            background: #e9d5ff; color: #6b21a8;
+        }
+        .btn-deliver:hover { background: #ddd6fe; transform: translateY(-1px); }
+
+        /* Order Tabs */
+        .order-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .order-tab {
+            padding: 10px 20px; border-radius: 20px; font-size: 14px;
+            font-weight: 600; cursor: pointer; background: #f3f4f6; color: #6b7280;
+            border: none; transition: all 0.3s; white-space: nowrap;
+        }
+
+        .order-tab.active {
+            background: var(--primary-green); color: white;
+        }
+
+        .order-tab:hover:not(.active) {
+            background: #e5e7eb;
+        }
+
+        /* Incoming Orders Section Highlight */
+        .incoming-section {
+            background: linear-gradient(135deg, #fef3e2 0%, #fff 100%);
+            border: 2px solid var(--accent-orange);
+        }
+
+        .badge-pending {
+            background: #f59e0b; color: white;
+            padding: 4px 10px; border-radius: 12px;
+            font-size: 12px; font-weight: 600;
+        }
+
+        /* Rating Section */
+        .rating-card {
+            background: linear-gradient(135deg, #fef3e2 0%, #fff 100%);
+            border: 2px solid var(--accent-orange);
+        }
+
+        .rating-display {
+            text-align: center; padding: 20px 0;
+        }
+
+        .rating-stars {
+            font-size: 2.5rem; color: #fbbf24; margin-bottom: 10px;
+        }
+
+        .rating-value {
+            font-size: 3rem; font-weight: 700; color: var(--dark-green);
+        }
+
+        .rating-text {
+            color: #6b7280; font-size: 14px; margin-top: 5px;
+        }
+
+        .rating-stats {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;
+        }
+
+        .rating-stat {
+            text-align: center; padding: 15px; background: white;
+            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .rating-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary-green); }
+        .rating-stat-label { color: #6b7280; font-size: 12px; margin-top: 3px; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center; padding: 40px 20px; color: #6b7280;
+        }
+
+        .empty-state i { font-size: 3rem; color: #d1d5db; margin-bottom: 15px; }
+
+        /* Spinner */
+        .spinner {
+            display: none; width: 18px; height: 18px;
+            border: 3px solid #ffffff; border-top-color: transparent;
+            border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;
+        }
+
+        .btn-submit.loading .spinner { display: inline-block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .nav-actions .user-info span { display: none; }
+            .crop-item { grid-template-columns: 60px 1fr; }
+            .crop-actions { grid-column: 1 / -1; justify-content: flex-end; }
+            .order-item { grid-template-columns: 50px 1fr; }
+            .order-actions { grid-column: 1 / -1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index-new.html" class="logo">
+                <i class="fas fa-leaf"></i>
+                <span>KisanSetu</span>
+            </a>
+            <div class="nav-actions">
+                <button class="btn-back" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="back">Back</span>
+                </button>
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Farmer</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-seedling"></i></div>
+                <div class="stat-value" id="totalCrops">0</div>
+                <div class="stat-label" data-i18n="myCrops">My Crops</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                <div class="stat-value" id="pendingOrders">0</div>
+                <div class="stat-label" data-i18n="pending">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-truck"></i></div>
+                <div class="stat-value" id="activeOrders">0</div>
+                <div class="stat-label" data-i18n="active">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-value" id="completedOrders">0</div>
+                <div class="stat-label" data-i18n="completed">Completed</div>
+            </div>
+            <div class="stat-card rating-card" style="border: none; padding: 20px;">
+                <div class="stat-icon green"><i class="fas fa-star"></i></div>
+                <div class="stat-value" id="ratingValue">5.0</div>
+                <div class="stat-label" data-i18n="rating">Rating</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Add Crop Form & My Crops -->
+            <div class="left-column">
+                <!-- Add Crop Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-plus-circle"></i> <span data-i18n="addNewCrop">Add New Crop</span></h3>
+                    </div>
+
+                    <form id="addCropForm">
+                        <div class="form-group">
+                            <label for="cropName" data-i18n="cropName">Crop Name</label>
+                            <input type="text" id="cropName" placeholder="e.g., Organic Tomatoes" data-i18n-placeholder="cropNamePlaceholder" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cropCategory" data-i18n="category">Category</label>
+                            <select id="cropCategory" required>
+                                <option value="" data-i18n="selectCategory">Select Category</option>
+                                <option value="vegetable">Vegetable</option>
+                                <option value="fruit">Fruit</option>
+                                <option value="grain">Grain</option>
+                                <option value="pulse">Pulse</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cropQuantity" data-i18n="quantity">Quantity (kg)</label>
+                            <input type="number" id="cropQuantity" placeholder="e.g., 500" data-i18n-placeholder="quantityPlaceholder" min="1" required>
+                        </div>
+
+                        <!-- AI Price Suggestion -->
+                        <div class="ai-suggestion">
+                            <div class="ai-suggestion-header">
+                                <i class="fas fa-robot"></i>
+                                <span data-i18n="aiPriceSuggestion">AI Price Suggestion</span>
+                            </div>
+                            <div class="suggested-price" id="suggestedPrice">--</div>
+                            <div class="price-range" id="priceRange" data-i18n="enterCropDetails">Enter crop details to get AI suggestion</div>
+                            <button type="button" class="btn-calculate" onclick="calculatePrice()">
+                                <i class="fas fa-calculator"></i> <span data-i18n="calculatePrice">Calculate Price</span>
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cropPrice" data-i18n="yourPrice">Your Price (₹/kg)</label>
+                            <input type="number" id="cropPrice" placeholder="e.g., 35" data-i18n-placeholder="pricePlaceholder" min="1" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cropImage" data-i18n="imageUrl">Image URL (optional)</label>
+                            <input type="url" id="cropImage" placeholder="https://example.com/image.jpg" data-i18n-placeholder="imagePlaceholder">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cropLocation" data-i18n="location">Location</label>
+                            <input type="text" id="cropLocation" placeholder="e.g., Lucknow, UP" data-i18n-placeholder="locationPlaceholder">
+                        </div>
+
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <span class="spinner"></span>
+                            <span class="btn-text" data-i18n="addCropListing">Add Crop Listing</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- My Crops -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-warehouse"></i> <span data-i18n="myCropsTitle">My Crops</span></h3>
+                        <span id="cropCount">0 items</span>
+                    </div>
+                    <div id="cropsList" class="crops-list">
+                        <div class="empty-state">
+                            <i class="fas fa-seedling"></i>
+                            <p>No crops listed yet. Add your first crop!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Incoming Orders & All Orders -->
+            <div class="right-column">
+                <!-- Incoming Order Requests (Pending) -->
+                <div class="card incoming-section">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-bell"></i> <span data-i18n="incomingOrderRequests">Incoming Order Requests</span></h3>
+                        <span class="badge-pending" id="pendingBadge">0 Pending</span>
+                    </div>
+                    <div id="incomingOrdersList" class="orders-list">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No pending order requests. Waiting for buyers...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Orders (with tabs) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-list-alt"></i> <span data-i18n="totalOrdersTitle">Total Orders</span></h3>
+                    </div>
+
+                    <!-- Order Tabs -->
+                    <div class="order-tabs">
+                        <button class="order-tab active" onclick="filterOrders('all', this)" data-i18n="allOrders">All Orders</button>
+                        <button class="order-tab" onclick="filterOrders('pending', this)">🟡 <span data-i18n="pending">Pending</span></button>
+                        <button class="order-tab" onclick="filterOrders('confirmed', this)">🟢 <span data-i18n="confirmed">Confirmed</span></button>
+                        <button class="order-tab" onclick="filterOrders('active', this)">🚚 <span data-i18n="active">Active</span></button>
+                        <button class="order-tab" onclick="filterOrders('completed', this)">✅ <span data-i18n="completed">Completed</span></button>
+                    </div>
+
+                    <div id="allOrdersList" class="orders-list">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>No orders yet. Waiting for buyers...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rating Card -->
+                <div class="card rating-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-trophy"></i> <span data-i18n="farmerRating">Farmer Rating</span></h3>
+                    </div>
+                    <div class="rating-display">
+                        <div class="rating-stars" id="ratingStars">⭐⭐⭐⭐⭐</div>
+                        <div class="rating-value" id="ratingScore">5.0</div>
+                        <div class="rating-text" data-i18n="basedOnPerformance">Based on order performance</div>
+                    </div>
+                    <div class="rating-stats">
+                        <div class="rating-stat">
+                            <div class="rating-stat-value" id="statTotalOrders">0</div>
+                            <div class="rating-stat-label" data-i18n="totalOrders">Total Orders</div>
+                        </div>
+                        <div class="rating-stat">
+                            <div class="rating-stat-value" id="statCompleted">0</div>
+                            <div class="rating-stat-label" data-i18n="successful">Successful</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="i18n.js"></script>
+    <script>
+        // ==========================================
+        // CONFIGURATION & STATE
+        // ==========================================
+        
+        const API_BASE_URL = 'http://localhost:8081';
+        
+        // Get logged-in user from localStorage
+        const user = JSON.parse(localStorage.getItem('kisansetu_user') || '{}');
+        
+        // Check authentication
+        if (!user.id || user.role !== 'FARMER') {
+            window.location.href = 'login.html';
+        }
+
+        // Set user name
+        document.getElementById('userName').textContent = user.fullName || 'Farmer';
+
+        // State
+        let allOrders = [];
+        let farmerStats = {
+            totalOrders: 0,
+            completedOrders: 0,
+            totalCrops: 0,
+            pendingOrders: 0,
+            activeOrders: 0
+        };
+        let currentFilter = 'all';
+
+        // ==========================================
+        // NAVIGATION (BACK BUTTON FIX)
+        // ==========================================
+        
+        function goBack() {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('kisansetu_user') || '{}');
+            if (!user.id) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Use browser history back
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Default to index if no history
+                window.location.href = 'index-new.html';
+            }
+        }
+
+        // Handle browser back button
+        window.onpopstate = function(event) {
+            const user = JSON.parse(localStorage.getItem('kisansetu_user') || '{}');
+            if (!user.id) {
+                window.location.href = 'login.html';
+            }
+        };
+
+        // ==========================================
+        // AI RATING SYSTEM
+        // ==========================================
+        
+        function calculateFarmerRating() {
+            const { totalOrders, completedOrders } = farmerStats;
+            if (totalOrders === 0) return 5.0;
+            const successRate = (completedOrders + (totalOrders - completedOrders) * 0.5) / totalOrders;
+            return Math.min(5.0, Math.max(1.0, 3.0 + (successRate * 2.0)));
+        }
+
+        function updateRatingDisplay() {
+            const rating = calculateFarmerRating();
+            const fullStars = Math.floor(rating);
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '⭐';
+            
+            document.getElementById('ratingStars').textContent = stars || '⭐';
+            document.getElementById('ratingScore').textContent = rating.toFixed(1);
+            document.getElementById('ratingValue').textContent = rating.toFixed(1);
+            document.getElementById('statTotalOrders').textContent = farmerStats.totalOrders;
+            document.getElementById('statCompleted').textContent = farmerStats.completedOrders;
+        }
+
+        // ==========================================
+        // CROP MANAGEMENT
+        // ==========================================
+        
+        function calculatePrice() {
+            const cropName = document.getElementById('cropName').value.trim().toLowerCase();
+            const quantity = parseFloat(document.getElementById('cropQuantity').value);
+
+            if (!cropName || !quantity) {
+                alert('Please enter crop name and quantity first');
+                return;
+            }
+
+            const basePrices = {
+                'tomato': 30, 'potato': 25, 'onion': 35, 'carrot': 40, 'cabbage': 20,
+                'cauliflower': 35, 'brinjal': 30, 'okra': 45, 'chili': 60, 'capsicum': 50,
+                'apple': 120, 'banana': 40, 'mango': 80, 'grapes': 100, 'orange': 70
+            };
+
+            let basePrice = basePrices[cropName] || 40;
+            let quantityFactor = quantity >= 1000 ? 0.95 : (quantity <= 10 ? 1.1 : 1.0);
+            const suggestedPrice = basePrice * quantityFactor;
+
+            document.getElementById('suggestedPrice').textContent = `₹${suggestedPrice.toFixed(2)}`;
+            document.getElementById('priceRange').textContent = `Suggested range: ₹${(suggestedPrice * 0.85).toFixed(2)} - ₹${(suggestedPrice * 1.15).toFixed(2)} per kg`;
+            document.getElementById('cropPrice').value = suggestedPrice.toFixed(2);
+        }
+
+        function setLoading(loading) {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = loading;
+            btn.classList.toggle('loading', loading);
+            btn.querySelector('.btn-text').textContent = loading ? 'Adding Crop...' : 'Add Crop Listing';
+        }
+
+        // Add Crop Form Handler
+        document.getElementById('addCropForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const cropData = {
+                name: document.getElementById('cropName').value.trim(),
+                category: document.getElementById('cropCategory').value,
+                quantity: parseFloat(document.getElementById('cropQuantity').value),
+                pricePerKg: parseFloat(document.getElementById('cropPrice').value),
+                farmerId: user.id,
+                farmerName: user.fullName,
+                imageUrl: document.getElementById('cropImage').value.trim() || null,
+                location: document.getElementById('cropLocation').value.trim() || null
+            };
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/crops`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cropData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Crop added successfully!');
+                    document.getElementById('addCropForm').reset();
+                    document.getElementById('suggestedPrice').textContent = '--';
+                    document.getElementById('priceRange').textContent = 'Enter crop details to get AI suggestion';
+                    loadCrops();
+                } else {
+                    alert(data.message || data.error || 'Failed to add crop');
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        async function loadCrops() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/crops/farmer/${user.id}`);
+                const crops = await response.json();
+
+                const listContainer = document.getElementById('cropsList');
+                document.getElementById('cropCount').textContent = `${crops.length} items`;
+                document.getElementById('totalCrops').textContent = crops.length;
+                farmerStats.totalCrops = crops.length;
+
+                if (crops.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-seedling"></i>
+                            <p>No crops listed yet. Add your first crop!</p>
+                        </div>`;
+                    return;
+                }
+
+                listContainer.innerHTML = crops.map(crop => `
+                    <div class="crop-item">
+                        <img src="${crop.imageUrl || 'https://placehold.co/80x80/22c55e/ffffff?text=🌾'}" 
+                             alt="${crop.name}" class="crop-image" 
+                             onerror="this.src='https://placehold.co/80x80/22c55e/ffffff?text=🌾'">
+                        <div class="crop-info">
+                            <h4>${crop.name}</h4>
+                            <p><i class="fas fa-tag"></i> ${crop.category || 'Uncategorized'} | 
+                               <i class="fas fa-weight-hanging"></i> ${crop.quantity} kg</p>
+                            <p><i class="fas fa-map-marker-alt"></i> ${crop.location || 'No location'}</p>
+                        </div>
+                        <div>
+                            <div class="crop-price">₹${crop.pricePerKg}/kg</div>
+                            <div class="crop-actions">
+                                <button class="btn-icon delete" onclick="deleteCrop('${crop.id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading crops:', error);
+            }
+        }
+
+        // Delete Crop - Also marks related orders as OUT_OF_STOCK
+        async function deleteCrop(cropId) {
+            if (!confirm('⚠️ Delete this crop?\n\nAll PENDING and CONFIRMED orders for this crop will be marked as OUT OF STOCK. Buyers will be notified.')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/crops/${cropId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('✅ ' + (data.message || 'Crop deleted successfully'));
+                    loadCrops();
+                    loadOrders(); // Refresh orders to show OUT_OF_STOCK status
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to delete crop');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error');
+            }
+        }
+
+        // ==========================================
+        // ORDER CONTROL FLOW - INCOMING ORDERS
+        // ==========================================
+        
+        // async function loadOrders() {
+        //     try {
+        //         console.log('Loading orders for farmer:', user.id);
+        //         const response = await fetch(`${API_BASE_URL}/api/orders/farmer/${user.id}`);
+                
+        //         if (!response.ok) {
+        //             console.error('Failed to load orders:', response.status, response.statusText);
+        //             return;
+        //         }
+                
+        //         allOrders = await response.json();
+        //         console.log('Loaded orders:', allOrders.length, allOrders);
+
+        //         // Calculate stats
+        //         farmerStats.totalOrders = allOrders.length;
+        //         farmerStats.pendingOrders = allOrders.filter(o => o.status && o.status.toUpperCase() === 'PENDING').length;
+        //         farmerStats.activeOrders = allOrders.filter(o => o.status && ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(o.status.toUpperCase())).length;
+        //         farmerStats.completedOrders = allOrders.filter(o => o.status && o.status.toUpperCase() === 'COMPLETED').length;
+                
+        //         console.log('Stats calculated:', farmerStats);
+
+        //         // Update stats display
+        //         document.getElementById('pendingOrders').textContent = farmerStats.pendingOrders;
+        //         document.getElementById('activeOrders').textContent = farmerStats.activeOrders;
+        //         document.getElementById('completedOrders').textContent = farmerStats.completedOrders;
+        //         document.getElementById('pendingBadge').textContent = `${farmerStats.pendingOrders} Pending`;
+
+        //         updateRatingDisplay();
+        //         renderIncomingOrders();
+        //         renderAllOrders();
+
+        //     } catch (error) {
+        //         console.error('Error loading orders:', error);
+        //     }
+        // }
+
+        async function loadOrders() {
+    try {
+        const farmerId = user?.id || user?._id;
+
+        if (!farmerId) {
+            console.error("Invalid farmer ID:", user);
+            return;
+        }
+
+        console.log('Loading orders for farmer:', farmerId);
+
+        const response = await fetch(`${API_BASE_URL}/api/orders/farmer/${farmerId}`);
+
+        if (!response.ok) {
+            console.error('Failed to load orders:', response.status, response.statusText);
+            return;
+        }
+
+        allOrders = await response.json() || [];
+        console.log('Loaded orders:', allOrders);
+
+        // Normalize IDs + fields
+        allOrders = allOrders.map(o => {
+            let s = (o.status || 'PENDING').toUpperCase();
+            if (!['PENDING', 'CONFIRMED', 'REJECTED', 'CANCELLED', 'OUT_OF_STOCK', 'SHIPPED', 'DELIVERED', 'COMPLETED'].includes(s)) {
+                s = 'PENDING';
+            }
+            return {
+                ...o,
+                id: o.id || o._id,
+                totalAmount: o.totalAmount || o.totalPrice || 0,
+                status: s
+            };
+        });
+
+        // Stats
+        farmerStats.totalOrders = allOrders.length;
+        farmerStats.pendingOrders = allOrders.filter(o => o.status?.toUpperCase() === 'PENDING').length;
+        farmerStats.activeOrders = allOrders.filter(o => ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(o.status?.toUpperCase())).length;
+        farmerStats.completedOrders = allOrders.filter(o => o.status?.toUpperCase() === 'COMPLETED').length;
+
+        document.getElementById('pendingOrders').textContent = farmerStats.pendingOrders;
+        document.getElementById('activeOrders').textContent = farmerStats.activeOrders;
+        document.getElementById('completedOrders').textContent = farmerStats.completedOrders;
+        document.getElementById('pendingBadge').textContent = `${farmerStats.pendingOrders} ${_t('pending')}`;
+
+        updateRatingDisplay();
+        renderIncomingOrders();
+        renderAllOrders();
+
+    } catch (error) {
+        console.error('Error loading orders:', error);
+    }
+}
+
+        // Render Incoming Orders (Pending only - highlighted section)
+        function renderIncomingOrders() {
+            const listContainer = document.getElementById('incomingOrdersList');
+            const pendingOrders = allOrders.filter(o => o.status && o.status.toUpperCase() === 'PENDING');
+            console.log('Pending orders for incoming:', pendingOrders.length, pendingOrders);
+
+            if (pendingOrders.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>${_t('noPendingOrders')}</p>
+                    </div>`;
+                return;
+            }
+
+            // Sort by date (newest first)
+            pendingOrders.sort((a, b) => new Date(b.placedAt || 0) - new Date(a.placedAt || 0));
+
+            listContainer.innerHTML = pendingOrders.map(order => `
+                <div class="order-item pending">
+                    <div class="order-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="order-info">
+                        <h4>${order.cropName}</h4>
+                        <p><i class="fas fa-user"></i> <strong>${order.buyerName || _t('unknown')}</strong></p>
+                        <p class="buyer-org"><i class="fas fa-building"></i> ${order.buyerOrganization || _t('buyer')}</p>
+                        <p><i class="fas fa-weight-hanging"></i> ${order.quantity} kg | 
+                           <i class="fas fa-calendar"></i> ${order.placedAt ? new Date(order.placedAt).toLocaleDateString() : '--'}</p>
+                        
+                        <!-- Action Buttons for PENDING orders -->
+                        <div class="order-actions">
+                            <button class="btn-action btn-accept" onclick="acceptOrder('${order.id || order._id}')">
+                                <i class="fas fa-check"></i> ${_t('acceptOrder')}
+                            </button>
+                            <button class="btn-action btn-decline" onclick="rejectOrder('${order.id || order._id}')">
+                                <i class="fas fa-times"></i> ${_t('decline')}
+                            </button>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="order-price">₹${order.totalAmount || order.totalPrice || 0}</div>
+                        <span class="order-status pending">${_t('statusPending')}</span>
+                        <div class="payment-badge escrow">${_t('escrowLocked')}</div>
+                        <p style="font-size: 11px; color: #6b7280; margin-top: 5px;">
+                            ${_t('youWillReceive')}: ₹${order.totalAmount || order.totalPrice || 0}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render All Orders (with filter tabs)
+        function filterOrders(filter, btnElement) {
+            currentFilter = filter;
+            
+            // Update tab styling
+            document.querySelectorAll('.order-tab').forEach(tab => tab.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            renderAllOrders();
+        }
+
+        function renderAllOrders() {
+            const listContainer = document.getElementById('allOrdersList');
+            
+            let filteredOrders = allOrders;
+            
+            if (currentFilter === 'pending') {
+                filteredOrders = allOrders.filter(o => o.status && o.status.toUpperCase() === 'PENDING');
+            } else if (currentFilter === 'confirmed') {
+                filteredOrders = allOrders.filter(o => o.status && o.status.toUpperCase() === 'CONFIRMED');
+            } else if (currentFilter === 'active') {
+                filteredOrders = allOrders.filter(o => o.status && ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(o.status.toUpperCase()));
+            } else if (currentFilter === 'completed') {
+                filteredOrders = allOrders.filter(o => o.status && ['COMPLETED', 'REJECTED', 'CANCELLED', 'OUT_OF_STOCK'].includes(o.status.toUpperCase()));
+            }
+
+            // Sort by date (newest first)
+            filteredOrders.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+
+            if (filteredOrders.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-bag"></i>
+                        <p>${currentFilter === 'all' ? _t('noOrdersWaiting') : _t('noMatchCrops')}</p>
+                    </div>`;
+                return;
+            }
+
+            listContainer.innerHTML = filteredOrders.map(order => {
+                const statusConfig = {
+                    'PENDING': { icon: 'fa-clock', class: 'pending', label: _t('statusPending') },
+                    'CONFIRMED': { icon: 'fa-check', class: 'confirmed', label: _t('statusConfirmed') },
+                    'REJECTED': { icon: 'fa-times', class: 'rejected', label: _t('statusRejected') },
+                    'CANCELLED': { icon: 'fa-ban', class: 'cancelled', label: _t('statusCancelled') },
+                    'OUT_OF_STOCK': { icon: 'fa-exclamation-triangle', class: 'out_of_stock', label: _t('statusOutOfStock') },
+                    'SHIPPED': { icon: 'fa-truck', class: 'shipped', label: _t('statusShipped') },
+                    'DELIVERED': { icon: 'fa-box', class: 'delivered', label: _t('statusDelivered') },
+                    'COMPLETED': { icon: 'fa-check-circle', class: 'completed', label: _t('statusCompleted') }
+                };
+                const config = statusConfig[order.status] || statusConfig['PENDING'];
+                const cssClass = order.status.toLowerCase().replace(/\s+/g, '_');
+
+                // Generate action buttons based on status
+                let actionButtons = '';
+                if (order.status === 'CONFIRMED') {
+                    actionButtons = `
+                        <button class="btn-action btn-ship" onclick="markAsShipped('${order.id}')">
+                            <i class="fas fa-truck"></i> ${_t('markAsShipped')}
+                        </button>
+                    `;
+                } else if (order.status === 'SHIPPED') {
+                    actionButtons = `
+                        <button class="btn-action btn-deliver" onclick="markAsDelivered('${order.id}')">
+                            <i class="fas fa-box"></i> ${_t('markAsDelivered')}
+                        </button>
+                    `;
+                }
+
+                return `
+                    <div class="order-item ${cssClass}">
+                        <div class="order-icon ${config.class}">
+                            <i class="fas ${config.icon}"></i>
+                        </div>
+                        <div class="order-info">
+                            <h4>${order.cropName}</h4>
+                            <p><i class="fas fa-user"></i> ${order.buyerName || _t('unknown')}</p>
+                            <p class="buyer-org"><i class="fas fa-building"></i> ${order.buyerOrganization || _t('buyer')}</p>
+                            <p><i class="fas fa-weight-hanging"></i> ${order.quantity} kg | 
+                               <i class="fas fa-calendar"></i> ${new Date(order.placedAt).toLocaleDateString()}</p>
+                            ${actionButtons ? `<div class="order-actions">${actionButtons}</div>` : ''}
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="order-price">₹${order.totalAmount}</div>
+                            <span class="order-status ${cssClass}">${config.label}</span>
+                            <div class="payment-badge ${getPaymentBadgeClass(order.status)}">${getPaymentLabel(order.status)}</div>
+                            <p style="font-size: 11px; color: #6b7280; margin-top: 5px;">
+                                ${_t('youReceive')}: ₹${order.totalAmount}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // ORDER WORKFLOW ACTIONS
+        // ==========================================
+        
+        // Accept Order (Farmer accepts PENDING order) → Status: CONFIRMED
+        // async function acceptOrder(orderId) {
+        //     if (!confirm('✅ Accept this order?\n\nThe crop quantity will be reserved for this buyer. Status will change to CONFIRMED.')) return;
+
+        //     try {
+        //         const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=CONFIRMED`, {
+        //             method: 'PUT',
+        //             headers: { 'Content-Type': 'application/json' }
+        //         });
+
+        //         if (response.ok) {
+        //             const data = await response.json();
+        //             alert('✅ Order accepted!\n\nStatus: CONFIRMED\nBuyer has been notified.');
+        //             loadOrders();
+        //         } else {
+        //             const data = await response.json();
+        //             alert(data.error || 'Failed to accept order');
+        //         }
+        //     } catch (error) {
+        //         console.error('Error:', error);
+        //         alert('Network error. Please try again.');
+        //     }
+        // }
+
+        // // Reject Order (Farmer rejects PENDING order) → Status: REJECTED
+        // async function rejectOrder(orderId) {
+        //     if (!confirm('❌ Decline this order?\n\nThe crop quantity will be returned to your inventory. Status will change to REJECTED.')) return;
+
+        //     try {
+        //         const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=REJECTED`, {
+        //             method: 'PUT',
+        //             headers: { 'Content-Type': 'application/json' }
+        //         });
+
+        //         if (response.ok) {
+        //             alert('❌ Order declined.\n\nCrop quantity returned to inventory. Buyer has been notified.');
+        //             loadOrders();
+        //             loadCrops(); // Refresh crops (quantity returned)
+        //         } else {
+        //             const data = await response.json();
+        //             alert(data.error || 'Failed to decline order');
+        //         }
+        //     } catch (error) {
+        //         console.error('Error:', error);
+        //         alert('Network error. Please try again.');
+        //     }
+        // }
+        async function acceptOrder(orderId) {
+            if (!confirm('✅ Accept this order?\n\nStatus will change to CONFIRMED.')) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=CONFIRMED`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    alert('✅ Order accepted!\n\nStatus: CONFIRMED');
+                    loadOrders();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to accept order');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        async function rejectOrder(orderId) {
+            if (!confirm('❌ Decline this order?\n\nStatus will change to REJECTED.')) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=REJECTED`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    alert('❌ Order declined.');
+                    loadOrders();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to decline order');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Mark as Shipped (CONFIRMED → SHIPPED)
+        async function markAsShipped(orderId) {
+            if (!confirm('🚚 Mark this order as shipped?\n\nBuyer will be notified that the order is on its way.')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=SHIPPED`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    alert('🚚 Order marked as shipped!\n\nBuyer has been notified.');
+                    loadOrders();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to mark as shipped');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Mark as Delivered (SHIPPED → DELIVERED)
+        async function markAsDelivered(orderId) {
+            if (!confirm('📦 Mark this order as delivered?\n\nBuyer will be notified to confirm receipt.')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}?status=DELIVERED`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    alert('📦 Order marked as delivered!\n\nWaiting for buyer to confirm receipt.');
+                    loadOrders();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to mark as delivered');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // ==========================================
+        // UTILITIES
+        // ==========================================
+        
+        function logout() {
+            localStorage.removeItem('kisansetu_user');
+            localStorage.removeItem('kisansetu_token');
+            window.location.href = 'login.html';
+        }
+
+        // ==========================================
+        // ESCROW PAYMENT STATUS
+        // ==========================================
+
+        function getPaymentStatus(orderStatus) {
+            const s = (orderStatus || '').toUpperCase();
+            if (['DELIVERED', 'COMPLETED'].includes(s)) return 'SUCCESS';
+            if (['CANCELLED', 'REJECTED', 'OUT_OF_STOCK'].includes(s)) return 'REFUNDED';
+            return 'ESCROW';
+        }
+
+        function getPaymentBadgeClass(orderStatus) {
+            const ps = getPaymentStatus(orderStatus);
+            return ps === 'SUCCESS' ? 'success' : ps === 'REFUNDED' ? 'refunded' : 'escrow';
+        }
+
+        function getPaymentLabel(orderStatus) {
+            const ps = getPaymentStatus(orderStatus);
+            if (ps === 'SUCCESS') return _t('paymentReleased');
+            if (ps === 'REFUNDED') return _t('paymentRefunded');
+            return _t('escrowLocked');
+        }
+
+        // Initialize
+        loadCrops();
+        loadOrders();
+    </script>
+</body>
+</html>
